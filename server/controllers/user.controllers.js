@@ -2,6 +2,7 @@ const User = require("../models/user.models");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 
 const secret_key = process.env.SECRET_KEY;
 
@@ -43,32 +44,30 @@ module.exports = {
     // find the user information by email
     const user = await User.findOne({ email: req.body.email });
     // if email was not found - cant log in
-    if (!user) return res.status(400).json({ message: "Email not found" });
+    if (user === null) return res.status(400);
     // check if password is correct
     const correct_password = await bcrypt.compare(
       req.body.password,
       user.password
     );
     // if password does not match encrypted password
-    if (!correct_password)
-      return res.status(400).json({ error: "password does not match" });
+    if (!correct_password) return res.status(400);
     // if password does match - create user web token
     const user_token = jwt.sign(
       {
         id: user._id,
       },
-      secret_key,
-      { expiresIn: "7d" }
+      secret_key
     );
     // respond to client with an access cookie
     res
-      .cookie("usertoken", user_token, secret_key, {
+      .cookie("user_token", user_token, secret_key, {
         httpOnly: true,
       })
-      .json({ message: "success", user: user });
+      .json({ message: "success", user: user_token });
   },
   logout: (req, res) => {
-    res.clearCookie("usertoken");
+    res.clearCookie("user_token");
     res.sendStatus(200).json({ message: "successfully logged out" });
   },
 };

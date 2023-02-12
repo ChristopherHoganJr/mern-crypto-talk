@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 module.exports.authenticate = (req, res, next) => {
   jwt.verify(
-    req.cookies.usertoken,
+    req.cookies.user_token,
     process.env.SECRET_KEY,
     (error, payload) => {
       if (error) {
