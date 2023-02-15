@@ -44,14 +44,15 @@ module.exports = {
     // find the user information by email
     const user = await User.findOne({ email: req.body.email });
     // if email was not found - cant log in
-    if (user === null) return res.status(400);
+    if (user === null) return res.json({ email_error: "email not found" });
     // check if password is correct
     const correct_password = await bcrypt.compare(
       req.body.password,
       user.password
     );
     // if password does not match encrypted password
-    if (!correct_password) return res.status(400);
+    if (!correct_password)
+      return res.json({ password_error: "password is incorrect" });
     // if password does match - create user web token
     const user_token = jwt.sign(
       {
@@ -64,10 +65,20 @@ module.exports = {
       .cookie("user_token", user_token, secret_key, {
         httpOnly: true,
       })
-      .json({ message: "success", user: user_token });
+      .json({ message: "success", userId: user._id });
   },
   logout: (req, res) => {
     res.clearCookie("user_token");
     res.sendStatus(200).json({ message: "successfully logged out" });
+  },
+  verify: (req, res) => {
+    // Pull data from cookie
+    var decoded = jwt.verify(req.cookies.user_token, secret_key);
+    const loggedUser = User.findById(decoded.id);
+    if (loggedUser) {
+      res.json({ id: loggedUser._id, name: loggedUser.name });
+    } else {
+      res.json({ verified: "false" });
+    }
   },
 };

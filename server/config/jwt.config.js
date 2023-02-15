@@ -6,7 +6,7 @@ module.exports.authenticate = (req, res, next) => {
     process.env.SECRET_KEY,
     (error, payload) => {
       if (error) {
-        res.status(401).json({ verified: false });
+        res.json({ verified: false });
       } else {
         next();
       }

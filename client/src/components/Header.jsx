@@ -1,16 +1,34 @@
-import React from "react";
+import React, { useContext } from "react";
+import { UserContext } from "../components/UserContext";
 import { Link } from "react-router-dom";
 
 const Header = () => {
+  const { user, setUser } = useContext(UserContext);
   return (
     <div>
       <nav className="flex justify-between mx-auto max-w-6xl">
-        <Link to="/">Home</Link>
+        <Link to="/" className="p-3 bg-green-200">
+          Home
+        </Link>
         <div className="flex gap-5">
-          <Link to="/">Link 1</Link>
-          <Link to="/">Link 2</Link>
-          <Link to="/">Link 3</Link>
-          <Link to="/">Link 4</Link>
+          {user ? (
+            <>
+              <Link to="/talk" className="p-3 bg-blue-200">
+                The Talk
+              </Link>
+              <Link
+                onClick={() => setUser(null)}
+                to="/login"
+                className="p-3 bg-red-200"
+              >
+                Log out
+              </Link>
+            </>
+          ) : (
+            <Link to="/login" className="p-3 bg-red-200">
+              Login
+            </Link>
+          )}
         </div>
       </nav>
     </div>

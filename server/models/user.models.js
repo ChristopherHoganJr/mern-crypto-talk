@@ -20,6 +20,12 @@ const UserSchema = mongoose.Schema(
       type: String,
       required: [true, "Please add a password"],
     },
+    posts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
   },
   {
     timestamps: true,
